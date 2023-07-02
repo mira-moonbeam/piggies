@@ -19,6 +19,20 @@ CURCOM=$(ls $REPONAME/commits | grep commit | sort -r | head -1)
 
 # find ./"$REPONAME" -type f | rev | cut -d'/' -f1 | rev | sort -u
 
+# i check for files in root and files in the current commit
+# AND OF COURSE I FORGOT TO CHECK IF THEY EXIST IN NEITHER BUT EXISTS IN INDEX AAAAAA
+for filepath in "$REPONAME/index"/*
+do
+    filename=$(basename "$filepath")
+    if ! find ./"$REPONAME/commits/$CURCOM" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
+    # Doesn't exist in HEAD COMMIT
+        if [ ! -f $filename ]; then
+        # doesn't exist in root
+            echo "$filename - added to index, file deleted" >> "$fileWrite"
+        fi
+    fi
+done
+
 # Files that still exist in root
 for filename in *
 do
