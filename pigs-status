@@ -24,7 +24,7 @@ for filename in *
 do
     if [ $filename != "*" ]; then
         # Making sure not empty directory
-        if ! find ./"$REPONAME/commits" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
+        if ! find ./"$REPONAME/commits/$CURCOM" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
             # Doesn't exist in ANY COMMIT
             if find ./"$REPONAME/index" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
                 # Exists in INDEX
@@ -36,7 +36,7 @@ do
     fi
 done
 
-for filename in $(find ./"$REPONAME/commits" -type f | rev | cut -d'/' -f1 | rev | sort -u)
+for filename in $(find ./"$REPONAME/commits/$CURCOM" -type f | rev | cut -d'/' -f1 | rev | sort -u)
 do
     # File exists in a commit
     if [ -f "$filename" ]; then
