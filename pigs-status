@@ -25,10 +25,19 @@ do
     if [ $filename != "*" ]; then
         # Making sure not empty directory
         if ! find ./"$REPONAME/commits/$CURCOM" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
-            # Doesn't exist in ANY COMMIT
+            # Doesn't exist in HEAD COMMIT
             if find ./"$REPONAME/index" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
                 # Exists in INDEX
-                echo "$filename - added to index" >> "$fileWrite"
+                if [! -f $filename ]; then
+                    # file is deleted in root
+                    echo "$filename - added to index, file deleted" >> "$fileWrite"
+                elif [ -z "$(diff "./$filename" "$REPONAME/index/$filename")" ]; then
+                    # file not changed
+                    echo "$filename - added to index" >> "$fileWrite"
+                else
+                    #file changed
+                    echo "$filename - added to index, file changed" >> "$fileWrite"
+                fi
             else
                 echo "$filename - untracked" >> "$fileWrite"
             fi
