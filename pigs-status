@@ -57,8 +57,15 @@ do
                     # Work diff from repo, same as in INDEX
                     echo "$filename - file changed, changes staged for commit" >> "$fileWrite"
                 else
-                    # Work diff from repo, diff from INDEX
-                    echo "$filename - file changed, changes not staged for commit" >> "$fileWrite"
+                    if [ -f "$REPONAME/commits/$CURCOM/$filename" ]; then
+                        if [ -z "$(diff "$REPONAME/index/$filename" "$REPONAME/commits/$CURCOM/$filename")" ]; then
+                            # Work diff from repo, index same as repo
+                            echo "$filename - file changed, changes not staged for commit" >> "$fileWrite"
+                        else
+                            # Work diff from repo, then index diff from repo
+                            echo "$filename - file changed, different changes staged for commit" >> "$fileWrite"
+                        fi
+                    fi                    
                 fi
             else
                 # Work diff from repo, not in INDEX
