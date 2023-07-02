@@ -2,7 +2,7 @@
 REPONAME=".pig"
 FORCE=false
 CACHED=false
-CURCOM=$(ls $REPONAME | grep commit | sort -r | head -1)
+CURCOM=$(ls $REPONAME/commits | grep commit | sort -r | head -1)
 
 # Parse options
 for option in "$@"; do
@@ -42,12 +42,12 @@ fileremoval() {
             if [ -z "$(diff "./$1" "$REPONAME/index/$1")" ]; then
                 sameIndWork=true
             fi
-            if [ -f "$REPONAME/$CURCOM/$1" ]; then
-                if [ -z "$(diff "$REPONAME/$CURCOM/$1" "$REPONAME/index/$1")" ]; then
+            if [ -f "$REPONAME/commits/$CURCOM/$1" ]; then
+                if [ -z "$(diff "$REPONAME/commits/$CURCOM/$1" "$REPONAME/index/$1")" ]; then
                     sameIndRepo=true
                 fi
 
-                if [ -z "$(diff "$REPONAME/$CURCOM/$1" "./$1")" ]; then
+                if [ -z "$(diff "$REPONAME/commits/$CURCOM/$1" "./$1")" ]; then
                     sameWorkRepo=true
                 fi
             fi
