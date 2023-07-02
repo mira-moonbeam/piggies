@@ -13,10 +13,65 @@
 # file diff to currComm but NOT added:     file changed, changes not staged for commit 
 
 REPONAME=".pig"
+fileWrite="$REPONAME/status"
+>"$fileWrite"
+CURCOM=$(ls $REPONAME/commits | grep commit | sort -r | head -1)
+
 # find ./"$REPONAME" -type f | rev | cut -d'/' -f1 | rev | sort -u
+
+# Files that still exist in root
 for filename in *
 do
-    if ! find ./"$REPONAME" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
-        echo "$filename - untracked"
+    if ! find ./"$REPONAME/commits" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
+        # Doesn't exist in ANY COMMIT
+        if find ./"$REPONAME/index" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
+            # Exists in INDEX
+            echo "$filename - added to index" >> "$fileWrite"
+        else
+            echo "$filename - untracked" >> "$fileWrite"
+        fi
     fi
 done
+
+for filename in $(find ./"$REPONAME/commits" -type f | rev | cut -d'/' -f1 | rev | sort -u)
+do
+    # File exists in a commit
+    if [ -f "$filename" ]; then
+        # Exists in root
+        diffWorkRepo=false
+
+        if [ -f "$REPONAME/commits/$CURCOM/$filename" ]; then
+            if [ -z "$(diff "./$filename" "$REPONAME/commits/$CURCOM/$filename")" ]; then
+                echo "$filename - same as repo" >> "$fileWrite"
+            else
+                diffWorkRepo=true
+            fi
+        else
+            # File changed due to it just being new ig
+            diffWorkRepo=true
+        fi
+
+        if $diffWorkRepo; then
+            if [ -f "$REPONAME/index/$filename" ]; then
+                if [ -z "$(diff "./$filename" "$REPONAME/index/$filename")" ]; then
+                    echo "$filename - file changed, changes staged for commit" >> "$fileWrite"
+                else
+                    echo "$filename - file changed, changes not staged for commit" >> "$fileWrite"
+                fi
+            else
+                # File changed due to it just being new ig
+                echo "$filename - file changed, changes not staged for commit" >> "$fileWrite"
+            fi
+        fi
+
+    elif find ./"$REPONAME/index" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
+        # Exists in INDEX
+        echo "$filename - file deleted" >> "$fileWrite"
+    else
+        # Does not exist in INDEX or root
+        echo "$filename - deleted" >> "$fileWrite"
+    fi
+done
+
+
+cat $fileWrite | sort

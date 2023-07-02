@@ -12,4 +12,5 @@ cd "$REPONAME" || exit
 mkdir "index"
 mkdir "commits"
 touch "log"
+touch "status"
 echo "Initialized empty pigs repository in $REPONAME"

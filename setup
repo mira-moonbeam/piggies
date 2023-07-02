@@ -1,0 +1,17 @@
+#!/bin/dash
+
+./pigs-init
+touch a b c d e f g h
+./pigs-add a b c d e f
+./pigs-commit -m 'first commit'
+echo hello >a
+echo hello >b
+./pigs-commit -a -m 'second commit'
+echo world >>a
+echo world >>b
+echo hello world >c
+./pigs-add a
+echo world >>b
+rm d
+./pigs-rm e
+./pigs-add g
