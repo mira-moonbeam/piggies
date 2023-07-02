@@ -54,14 +54,26 @@ fileremoval() {
         fi
 
         if $CACHED; then
-            handle_remove "$1"
+        	if ! $sameIndRepo && ! $sameIndWork; then
+    	       		echo "$0: error: '$filename' in index is different to both the working file and the repository" >&2
+    	        	exit 1
+    	       	fi
+        	handle_remove "$1"
         else
-            if $sameIndWork && ! $sameIndRepo; then
-                echo "$0: error: '$filename' has staged changes in the index" >&2
-    	        exit 1
-            fi
-            handle_remove "$1"
-        fi
+        	if $sameIndWork && ! $sameIndRepo; then
+        		echo "$0: error: '$filename' has staged changes in the index" >&2
+    	        	exit 1
+    	       	fi
+    	       	if ! $sameIndRepo && ! $sameIndWork; then
+    	       		echo "$0: error: '$filename' in index is different to both the working file and the repository" >&2
+    	        	exit 1
+    	       	fi
+    	        if ! $sameWorkRepo; then
+    	        	echo "$0: error: '$filename' in the repository is different to the working file" >&2
+    	        	exit 1
+    	        fi
+    	        handle_remove "$1"
+    	fi
     fi
 }
 
