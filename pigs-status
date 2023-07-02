@@ -28,10 +28,7 @@ do
             # Doesn't exist in HEAD COMMIT
             if find ./"$REPONAME/index" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
                 # Exists in INDEX
-                if [! -f $filename ]; then
-                    # file is deleted in root
-                    echo "$filename - added to index, file deleted" >> "$fileWrite"
-                elif [ -z "$(diff "./$filename" "$REPONAME/index/$filename")" ]; then
+                if [ -z "$(diff "./$filename" "$REPONAME/index/$filename")" ]; then
                     # file not changed
                     echo "$filename - added to index" >> "$fileWrite"
                 else
