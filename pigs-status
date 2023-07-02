@@ -22,13 +22,16 @@ CURCOM=$(ls $REPONAME/commits | grep commit | sort -r | head -1)
 # Files that still exist in root
 for filename in *
 do
-    if ! find ./"$REPONAME/commits" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
-        # Doesn't exist in ANY COMMIT
-        if find ./"$REPONAME/index" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
-            # Exists in INDEX
-            echo "$filename - added to index" >> "$fileWrite"
-        else
-            echo "$filename - untracked" >> "$fileWrite"
+    if [ $filename != "*" ]; then
+        # Making sure not empty directory
+        if ! find ./"$REPONAME/commits" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
+            # Doesn't exist in ANY COMMIT
+            if find ./"$REPONAME/index" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
+                # Exists in INDEX
+                echo "$filename - added to index" >> "$fileWrite"
+            else
+                echo "$filename - untracked" >> "$fileWrite"
+            fi
         fi
     fi
 done
