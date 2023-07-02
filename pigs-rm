@@ -1,0 +1,77 @@
+#!/bin/dash
+REPONAME=".pig"
+FORCE=false
+CACHED=false
+CURCOM=$(ls $REPONAME | grep commit | sort -r | head -1)
+
+# Parse options
+for option in "$@"; do
+    case $option in
+        --force)
+            FORCE=true
+            shift
+            ;;
+        --cached)
+            CACHED=true
+            shift
+            ;;
+    esac
+done
+
+handle_remove() {
+    if $CACHED; then
+        rm "$REPONAME/index/$1"
+    else
+        rm "$REPONAME/index/$1"
+        rm "./$1"
+    fi
+}
+
+# Assume: File exists in INDEX
+fileremoval() {
+    if $FORCE; then
+        handle_remove "$1"
+    else
+
+        sameIndWork=false
+        sameIndRepo=false
+        sameWorkRepo=false
+
+        if [ -f "./$1" ]; then
+            # File exists in workingDir
+            if [ -z "$(diff "./$1" "$REPONAME/index/$1")" ]; then
+                sameIndWork=true
+            fi
+            if [ -f "$REPONAME/$CURCOM/$1" ]; then
+                if [ -z "$(diff "$REPONAME/$CURCOM/$1" "$REPONAME/index/$1")" ]; then
+                    sameIndRepo=true
+                fi
+
+                if [ -z "$(diff "$REPONAME/$CURCOM/$1" "./$1")" ]; then
+                    sameWorkRepo=true
+                fi
+            fi
+        fi
+
+        if $CACHED; then
+            handle_remove "$1"
+        else
+            if $sameIndWork && ! $sameIndRepo; then
+                echo "$0: error: '$filename' has staged changes in the index" >&2
+    	        exit 1
+            fi
+            handle_remove "$1"
+        fi
+    fi
+}
+
+# Process each file
+for filename in "$@"; do
+    if [ -f "$REPONAME/index/$filename" ]; then
+        fileremoval "$filename"
+    else   
+        # File doesn't exist in INDEX
+        echo "$0: error: '$filename' is not in the pigs repository" >&2
+    	exit 1
+    fi
+done

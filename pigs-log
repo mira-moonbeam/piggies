@@ -1,0 +1,3 @@
+#!/bin/dash
+REPONAME=".pig"
+cat "$REPONAME/log"

@@ -1,0 +1,28 @@
+#!/bin/dash
+
+REPONAME=".pig"
+
+if [ -d "$REPONAME" ]; then
+	:
+else
+	echo "$0: error: pigs repository directory .pig not found" >& 2
+	exit 1
+fi
+
+for filename in "$@"
+do
+	if [ -f "$filename" ]; then
+		if echo "$filename" | grep -qE "^[a-zA-Z0-9\.\-_]+$"; then
+			cp "$filename" "$REPONAME/index"
+		else
+			echo "./$0: $filename is not an ordinary file and cannot be added - it has been excluded."
+		fi
+	else
+		if [ -f "$REPONAME/index/$filename" ]; then
+			rm "$REPONAME/index/$filename"
+		else
+			echo "$0: error: can not open '$filename'" >& 2
+			exit 1
+		fi
+	fi
+done

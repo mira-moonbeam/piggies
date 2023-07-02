@@ -1,0 +1,15 @@
+#!/bin/dash
+
+REPONAME=".pig"
+
+if [ -d "$REPONAME" ]; then
+	echo "./$0: error: $REPONAME already exists" >& 2
+	exit 1
+fi
+
+mkdir "$REPONAME"
+cd "$REPONAME" || exit
+mkdir "index"
+mkdir "commits"
+touch "log"
+echo "Initialized empty pigs repository in $REPONAME"

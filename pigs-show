@@ -1,0 +1,33 @@
+#!/bin/dash
+
+REPONAME=".pig"
+
+filename="$(echo "$1" | cut -d':' -f2)"
+
+if [ "$(echo "$1" | cut -d':' -f1)" = "" ]; then
+	#NO NUM
+	if [ -f "$REPONAME/index/$filename" ]; then
+		cat "$REPONAME/index/$filename"
+	else
+		echo "$0: error: '$filename' not found in index" >& 2
+		exit 1
+	fi
+	
+	
+else	
+	#YESNUM
+	COMMIT="$(echo "$1" | cut -d':' -f1)"
+	if [ -d "$REPONAME/commit$COMMIT" ]; then
+		if [ -f "$REPONAME/commit$COMMIT/$filename" ]; then
+			cat "$REPONAME/commit$COMMIT/$filename"
+		else
+			echo "$0: error: '$filename' not found in commit $COMMIT" >& 2
+			exit 1
+		fi
+	else
+		echo "$0: error: unknown commit '$COMMIT'" >& 2
+		exit 1
+	fi
+	
+	
+fi
