@@ -62,7 +62,7 @@ do
                 fi
             else
                 # Work diff from repo, not in INDEX
-                echo "$filename - file changed, changes not staged for commit" >> "$fileWrite"
+                echo "$filename - untracked" >> "$fileWrite"
             fi
         fi
 
