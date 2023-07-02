@@ -54,12 +54,14 @@ do
         if $diffWorkRepo; then
             if [ -f "$REPONAME/index/$filename" ]; then
                 if [ -z "$(diff "./$filename" "$REPONAME/index/$filename")" ]; then
+                    # Work diff from repo, same as in INDEX
                     echo "$filename - file changed, changes staged for commit" >> "$fileWrite"
                 else
+                    # Work diff from repo, diff from INDEX
                     echo "$filename - file changed, changes not staged for commit" >> "$fileWrite"
                 fi
             else
-                # File changed due to it just being new ig
+                # Work diff from repo, not in INDEX
                 echo "$filename - file changed, changes not staged for commit" >> "$fileWrite"
             fi
         fi
