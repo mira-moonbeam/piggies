@@ -17,9 +17,9 @@ if [ "$(echo "$1" | cut -d':' -f1)" = "" ]; then
 else	
 	#YESNUM
 	COMMIT="$(echo "$1" | cut -d':' -f1)"
-	if [ -d "$REPONAME/commit$COMMIT" ]; then
-		if [ -f "$REPONAME/commit$COMMIT/$filename" ]; then
-			cat "$REPONAME/commit$COMMIT/$filename"
+	if [ -d "$REPONAME/commits/commit$COMMIT" ]; then
+		if [ -f "$REPONAME/commits/commit$COMMIT/$filename" ]; then
+			cat "$REPONAME/commits/commit$COMMIT/$filename"
 		else
 			echo "$0: error: '$filename' not found in commit $COMMIT" >& 2
 			exit 1

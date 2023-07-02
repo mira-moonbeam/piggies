@@ -13,7 +13,7 @@
 # file diff to currComm but NOT added:     file changed, changes not staged for commit 
 
 REPONAME=".pig"
-#find ./"$REPONAME" -type f | rev | cut -d'/' -f1 | rev | sort -u
+# find ./"$REPONAME" -type f | rev | cut -d'/' -f1 | rev | sort -u
 for filename in *
 do
     if ! find ./"$REPONAME" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
