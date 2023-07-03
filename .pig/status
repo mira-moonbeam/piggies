@@ -1,0 +1,17 @@
+g - added to index
+h - untracked
+pigs-add - untracked
+pigs-commit - untracked
+pigs-init - untracked
+pigs-log - untracked
+pigs-rm - untracked
+pigs-show - untracked
+pigs-status - untracked
+setup - untracked
+a - file changed, changes staged for commit
+b - file changed, changes not staged for commit
+c - file changed, changes not staged for commit
+d - file deleted
+e - deleted
+f - same as repo
+z - added to index, file deleted

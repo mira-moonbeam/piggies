@@ -87,7 +87,7 @@ do
         fi
 
     elif find ./"$REPONAME/index" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
-        # Exists in INDEX
+        # Exists in INDEX, does not exist in root, exists in a commit
         echo "$filename - file deleted" >> "$fileWrite"
     else
         # Does not exist in INDEX or root
@@ -95,5 +95,23 @@ do
     fi
 done
 
+# now we have checked files that exist in only root, and files that only exist in commits.
+# check files that exist only in index and nowhere else
+# status contains files that exist in either root or some commit
+for filepath in "$REPONAME/index"/*
+do
+    addedAndDelete=true
+    filename=$(echo $filepath | rev | cut -d"/" -f1 | rev)
+    for statusedFile in $(cat $REPONAME/status | cut -d" " -f1)
+    do
+        if [ $filename = $statusedFile ]; then
+            addedAndDelete=false
+        fi
+    done
+    # if it exist in index but not status, then it was added but file deleted
+    if $addedAndDelete; then
+        echo "$filename - added to index, file deleted" >> "$fileWrite"
+    fi
+done
 
 cat $fileWrite | sort
