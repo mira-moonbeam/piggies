@@ -100,17 +100,19 @@ done
 # status contains files that exist in either root or some commit
 for filepath in "$REPONAME/index"/*
 do
-    addedAndDelete=true
-    filename=$(echo $filepath | rev | cut -d"/" -f1 | rev)
-    for statusedFile in $(cat $REPONAME/status | cut -d" " -f1)
-    do
-        if [ $filename = $statusedFile ]; then
-            addedAndDelete=false
+    if [ $filepath != "$REPONAME/index/*" ]; then
+        addedAndDelete=true
+        filename=$(echo $filepath | rev | cut -d"/" -f1 | rev)
+        for statusedFile in $(cat $REPONAME/status | cut -d" " -f1)
+        do
+            if [ $filename = $statusedFile ]; then
+                addedAndDelete=false
+            fi
+        done
+        # if it exist in index but not status, then it was added but file deleted
+        if $addedAndDelete; then
+            echo "$filename - added to index, file deleted" >> "$fileWrite"
         fi
-    done
-    # if it exist in index but not status, then it was added but file deleted
-    if $addedAndDelete; then
-        echo "$filename - added to index, file deleted" >> "$fileWrite"
     fi
 done
 
