@@ -1,27 +1,10 @@
 #!/bin/dash
 
-# EXISTENCE THINGS
-# exists in some commit but does not exist in index and root:    deleted
-# exist in index and some commit but not in root:               file deleted
-
-# file doesnt exist in any commit but added:     added to index
-# file doesnt exist in any commit and not added: untracked
-
-# DIFF THINGS
-# same as currentCommit:                   same as repo 
-# file diff to currComm and added:         file changed, changes staged for commit
-# file diff to currComm but NOT added:     file changed, changes not staged for commit 
-
 REPONAME=".pig"
 fileWrite="$REPONAME/status"
 true>"$fileWrite"
+# I know shell-check doesn't like it but there will not be a NOT alphanumeric filename in commits
 CURCOM=$(ls $REPONAME/commits | grep commit | sort -r | head -1)
-
-# find ./"$REPONAME" -type f | rev | cut -d'/' -f1 | rev | sort -u
-
-# i check for files in root and files in the current commit
-# AND OF COURSE I FORGOT TO CHECK IF THEY EXIST IN NEITHER BUT EXISTS IN INDEX AAAAAA
-# IT NEED TO BE LIKE IF ONLY IN INDEX THE NU KNOW IT WAS DELETED lkjfsdakjasfjkl
 
 # Files that still exist in root
 for filename in *
