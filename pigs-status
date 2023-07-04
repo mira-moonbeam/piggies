@@ -14,7 +14,7 @@
 
 REPONAME=".pig"
 fileWrite="$REPONAME/status"
->"$fileWrite"
+true>"$fileWrite"
 CURCOM=$(ls $REPONAME/commits | grep commit | sort -r | head -1)
 
 # find ./"$REPONAME" -type f | rev | cut -d'/' -f1 | rev | sort -u
@@ -103,15 +103,14 @@ do
     if [ "$filepath" != "$REPONAME/index/*" ]; then
         addedAndDelete=true
         filename=$(echo "$filepath" | rev | cut -d"/" -f1 | rev)
-        cat $REPONAME/status | cut -d" " -f1 > tmpfile
-        while read statusedFile
+        cat $REPONAME/status | cut -d" " -f1 > tmp
+        while read -r statusedFile
         do
             if [ "$filename" = "$statusedFile" ]; then
                 addedAndDelete=false
             fi
-        done < tmpfile
-        rm tmpfile
-
+        done < tmp
+        rm tmp
         # if it exist in index but not status, then it was added but file deleted
         if "$addedAndDelete"; then
             echo "$filename - added to index, file deleted" >> "$fileWrite"
