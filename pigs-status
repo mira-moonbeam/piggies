@@ -26,7 +26,7 @@ CURCOM=$(ls $REPONAME/commits | grep commit | sort -r | head -1)
 # Files that still exist in root
 for filename in *
 do
-    if [ $filename != "*" ]; then
+    if [ "$filename" != "*" ]; then
         # Making sure not empty directory
         if ! find ./"$REPONAME/commits/$CURCOM" -type f | rev | cut -d'/' -f1 | rev | sort -u | grep "$filename" > /dev/null; then
             # Doesn't exist in HEAD COMMIT
@@ -100,12 +100,12 @@ done
 # status contains files that exist in either root or some commit
 for filepath in "$REPONAME/index"/*
 do
-    if [ $filepath != "$REPONAME/index/*" ]; then
+    if [ "$filepath" != "$REPONAME/index/*" ]; then
         addedAndDelete=true
-        filename=$(echo $filepath | rev | cut -d"/" -f1 | rev)
-        for statusedFile in $(cat $REPONAME/status | cut -d" " -f1)
+        filename=$(echo "$filepath" | rev | cut -d"/" -f1 | rev)
+        cat "$REPONAME"/status | cut -d" " -f1 | while read statusedFile
         do
-            if [ $filename = $statusedFile ]; then
+            if [ "$filename" = "$statusedFile" ]; then
                 addedAndDelete=false
             fi
         done
