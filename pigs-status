@@ -103,14 +103,14 @@ do
     if [ "$filepath" != "$REPONAME/index/*" ]; then
         addedAndDelete=true
         filename=$(echo "$filepath" | rev | cut -d"/" -f1 | rev)
-        cat "$REPONAME"/status | cut -d" " -f1 | while read statusedFile
+        while read statusedFile
         do
             if [ "$filename" = "$statusedFile" ]; then
                 addedAndDelete=false
             fi
-        done
+        done < <(cat $REPONAME/status | cut -d" " -f1)
         # if it exist in index but not status, then it was added but file deleted
-        if $addedAndDelete; then
+        if "$addedAndDelete"; then
             echo "$filename - added to index, file deleted" >> "$fileWrite"
         fi
     fi

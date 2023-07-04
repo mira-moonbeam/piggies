@@ -8,16 +8,10 @@ pigs-rm - untracked
 pigs-show - untracked
 pigs-status - untracked
 setup - untracked
+test - untracked
 a - file changed, changes staged for commit
 b - file changed, changes not staged for commit
 c - file changed, changes not staged for commit
 d - file deleted
 e - file deleted, deleted from index
 f - same as repo
-a - added to index, file deleted
-b - added to index, file deleted
-c - added to index, file deleted
-d - added to index, file deleted
-f - added to index, file deleted
-g - added to index, file deleted
-z - added to index, file deleted
