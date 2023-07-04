@@ -82,7 +82,7 @@ do
                 fi
             else
                 # Work diff from repo, not in INDEX
-                echo "$filename - untracked" >> "$fileWrite"
+                echo "$filename - deleted from index" >> "$fileWrite"
             fi
         fi
 
@@ -91,7 +91,7 @@ do
         echo "$filename - file deleted" >> "$fileWrite"
     else
         # Does not exist in INDEX or root
-        echo "$filename - deleted" >> "$fileWrite"
+        echo "$filename - file deleted, deleted from index" >> "$fileWrite"
     fi
 done
 
