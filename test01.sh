@@ -1,7 +1,7 @@
 #! /usr/bin/env dash
 
 # ==============================================================================
-# test00.sh
+# test01.sh
 # Test the pigs-add command.
 # ==============================================================================
 
@@ -83,7 +83,7 @@ fi
 cat > "$expected_output" <<EOF
 EOF
 
-pigs-add b > "$actual_output" 2>&1
+pigs-add a b > "$actual_output" 2>&1
 sed -i 's|^.*/||' "$actual_output"
 
 if ! diff "$expected_output" "$actual_output"; then
@@ -103,6 +103,15 @@ if [ ! -f ".pig/index/b" ]; then
 fi
 
 if ! diff ".pig/index/b" "b" > /dev/null; then
+    echo "Failed test: You didn't actually copy the files lol"
+    exit 1
+fi
+
+# ADD CHANGED FILE
+echo new line > a
+pigs-add a
+
+if ! diff ".pig/index/a" "a" > /dev/null; then
     echo "Failed test: You didn't actually copy the files lol"
     exit 1
 fi
