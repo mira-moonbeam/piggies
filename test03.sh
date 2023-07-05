@@ -27,7 +27,76 @@ trap 'rm "$expected_output" "$actual_output" -rf "$test_dir"' INT HUP QUIT TERM 
 echo line 1 > a
 echo hello world > b
 
-# CREATE PIGS REPO
 cat > "$expected_output" <<EOF
 Initialized empty pigs repository in .pig
 EOF
+
+pigs-init > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+cat > "$expected_output" <<EOF
+EOF
+
+pigs-add a > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+cat > "$expected_output" <<EOF
+Committed as commit 0
+EOF
+
+pigs-commit -m 'test' > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+# CHECK COMMIT FOR CORRECTNESS
+cat > "$expected_output" <<EOF
+0 test
+EOF
+
+pigs-log > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+cat > "$expected_output" <<EOF
+a
+EOF
+
+ls .pig/commits/commit0 > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+cat > "$expected_output" <<EOF
+line 1
+EOF
+
+pigs-show 0:a > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+echo "$0: pigs-commit test passed!"

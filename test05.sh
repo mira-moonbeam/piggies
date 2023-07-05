@@ -1,8 +1,8 @@
 #! /usr/bin/env dash
 
 # ==============================================================================
-# test01.sh
-# Test the pigs-add command.
+# test02.sh
+# Test the pigs-commit command with various arguments.
 # ==============================================================================
 
 # add the current directory to the PATH so scripts
@@ -26,36 +26,7 @@ trap 'rm "$expected_output" "$actual_output" -rf "$test_dir"' INT HUP QUIT TERM 
 # Make some files and directories
 echo line 1 > a
 echo hello world > b
-echo hey > .badFile
-echo rawr > ho^rrend0usn4me
-mkdir badDir
 
-# ADDING ANYTHING BEFORE REPO CREATION/ PIGS INITIALIZATION
-cat > "$expected_output" <<EOF
-pigs-add: error: pigs repository directory .pig not found
-EOF
-
-pigs-add a > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-cat > "$expected_output" <<EOF
-pigs-add: error: pigs repository directory .pig not found
-EOF
-
-pigs-add badDir > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-# CREATE PIGS REPO
 cat > "$expected_output" <<EOF
 Initialized empty pigs repository in .pig
 EOF
@@ -68,11 +39,10 @@ if ! diff "$expected_output" "$actual_output"; then
     exit 1
 fi
 
-# ADD FILES TO THE STAGING AREA
 cat > "$expected_output" <<EOF
 EOF
 
-pigs-add a > "$actual_output" 2>&1
+pigs-add b > "$actual_output" 2>&1
 sed -i 's|^.*/||' "$actual_output"
 
 if ! diff "$expected_output" "$actual_output"; then
@@ -81,9 +51,10 @@ if ! diff "$expected_output" "$actual_output"; then
 fi
 
 cat > "$expected_output" <<EOF
+Committed as commit 0
 EOF
 
-pigs-add a b > "$actual_output" 2>&1
+pigs-commit -m 'test' > "$actual_output" 2>&1
 sed -i 's|^.*/||' "$actual_output"
 
 if ! diff "$expected_output" "$actual_output"; then
@@ -91,91 +62,70 @@ if ! diff "$expected_output" "$actual_output"; then
     exit 1
 fi
 
-# CHECK STAGING AREA AND ITS CONTENTS
-cat > "$expected_output" <<EOF
-a
-b
-EOF
-
-ls .pig/index > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-if ! diff ".pig/index/b" "b" > /dev/null; then
-    echo "Failed test: You didn't actually copy the files lol"
-    exit 1
-fi
-
-# ADD CHANGED FILE
-echo new line > a
-pigs-add a
-
-if ! diff ".pig/index/a" "a" > /dev/null; then
-    echo "Failed test: You didn't actually copy the files lol"
-    exit 1
-fi
-
-# ADD A DIRECTORY
-cat > "$expected_output" <<EOF
-pigs-add: 'badDir' is a repository and not a file
-EOF
-
-pigs-add badDir > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-# ADD BAD FILENAME
-cat > "$expected_output" <<EOF
-pigs-add: error: '.badFile' bad filename.
-EOF
-
-pigs-add .badFile > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-cat > "$expected_output" <<EOF
-pigs-add: error: 'ho^rrend0usn4me' bad filename.
-EOF
-
-pigs-add ho^rrend0usn4me > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-# ADD NONO-EXISTENT FILE
-cat > "$expected_output" <<EOF
-pigs-add: error: can not open 'crazyFile'
-EOF
-
-pigs-add crazyFile > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-# REMOVE A FILE AND ADD
-rm a
-pigs-add a > "$actual_output" 2>&1
-
+# CHECK COMMIT FOR CORRECTNESS
 cat > "$expected_output" <<EOF
 b
 EOF
 
-echo "$0: pigs-add test passed!"
+ls .pig/commits/commit0 > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+cat > "$expected_output" <<EOF
+hello world
+EOF
+
+pigs-show 0:b > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+# NOW -a
+# TEST -a OPTION
+echo line2 >> b
+
+cat > "$expected_output" <<EOF
+Committed as commit 1
+EOF
+
+pigs-commit -a -m "test" > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+# CHECK COMMIT FOR CORRECTNESS
+cat > "$expected_output" <<EOF
+b
+EOF
+
+ls .pig/commits/commit0 > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
+cat > "$expected_output" <<EOF
+hello world
+line2
+EOF
+
+pigs-show 1:b > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+echo "$0: pigs-commit -a option test passed!"
