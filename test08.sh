@@ -1,8 +1,8 @@
 #! /usr/bin/env dash
 
 # ==============================================================================
-# test07.sh
-# Test the pigs-rm command errors.
+# test08.sh
+# Test the pigs-rm command.
 # ==============================================================================
 
 # add the current directory to the PATH so scripts

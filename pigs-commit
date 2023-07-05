@@ -2,6 +2,13 @@
 
 REPONAME=".pig"
 
+if [ -d "$REPONAME" ]; then
+	:
+else
+	echo "$0: error: pigs repository directory .pig not found" >& 2
+	exit 1
+fi
+
 case $# in
 	2)
 		CHECK=$1

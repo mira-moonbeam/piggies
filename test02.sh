@@ -27,6 +27,19 @@ trap 'rm "$expected_output" "$actual_output" -rf "$test_dir"' INT HUP QUIT TERM 
 echo line 1 > a
 echo hello world > b
 
+# COMMIT BEFORE PIG INITIALIZE
+cat > "$expected_output" <<EOF
+pigs-commit: error: pigs repository directory .pig not found
+EOF
+
+pigs-commit -a -m 'test' > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
 # CREATE PIGS REPO
 cat > "$expected_output" <<EOF
 Initialized empty pigs repository in .pig

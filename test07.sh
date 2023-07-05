@@ -26,6 +26,19 @@ trap 'rm "$expected_output" "$actual_output" -rf "$test_dir"' INT HUP QUIT TERM 
 # Make some files and directories
 echo line 1 > a
 
+# PIGS RM BEFORE PIG INITIALIZE
+cat > "$expected_output" <<EOF
+pigs-rm: error: pigs repository directory .pig not found
+EOF
+
+pigs-rm a > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
 pigs-init> /dev/null 2>&1
 
 pigs-add a > /dev/null 2>&1
