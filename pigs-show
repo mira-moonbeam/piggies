@@ -11,7 +11,7 @@ fi
 
 filename="$(echo "$1" | cut -d':' -f2)"
 
-if echo "$1" | grep -qE '.+:.+'; then
+if echo "$1" | grep -qE '.*:.+'; then
 	:
 else
 	echo "$0: error: should have arguments in style [commit number]:[filename]" >& 2
