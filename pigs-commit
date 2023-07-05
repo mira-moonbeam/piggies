@@ -45,7 +45,7 @@ else
 	fi
 fi
 
-if [ ! -n "$(ls -A $REPONAME/index)" ]; then
+if [ -z "$(ls -A $REPONAME/index)" ]; then
 	echo "nothing to commit"
 	exit 1
 fi

@@ -12,7 +12,7 @@ fi
 for filename in "$@"
 do
 	if [ -f "$filename" ]; then
-		if echo $filename | grep -qE '^[a-zA-Z0-9][a-zA-Z0-9\._\-]*$'; then
+		if echo "$filename" | grep -qE '^[a-zA-Z0-9][a-zA-Z0-9\._\-]*$'; then
 			cp "$filename" "$REPONAME/index"
 		else
 			echo "./$0: error: '$filename' bad filename."
