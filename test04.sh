@@ -64,6 +64,19 @@ fi
 
 # BAD SHOWS
 
+# Bad arg
+cat > "$expected_output" <<EOF
+pigs-show: error: should have arguments in style [commit number]:[filename]
+EOF
+
+pigs-show bad > "$actual_output" 2>&1
+sed -i 's|^.*/||' "$actual_output"
+
+if ! diff "$expected_output" "$actual_output"; then
+    echo "Failed test"
+    exit 1
+fi
+
 # Bad commit number
 cat > "$expected_output" <<EOF
 pigs-show: error: commit has to be a non-negative integer

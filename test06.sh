@@ -1,8 +1,8 @@
 #! /usr/bin/env dash
 
 # ==============================================================================
-# test03.sh
-# Test the pigs-commit command for correctness.
+# test06.sh
+# Test the pigs-log command.
 # ==============================================================================
 
 # add the current directory to the PATH so scripts
@@ -39,10 +39,11 @@ if ! diff "$expected_output" "$actual_output"; then
     exit 1
 fi
 
+# NO COMMITS
 cat > "$expected_output" <<EOF
 EOF
 
-pigs-add a > "$actual_output" 2>&1
+pigs-log > "$actual_output" 2>&1
 sed -i 's|^.*/||' "$actual_output"
 
 if ! diff "$expected_output" "$actual_output"; then
@@ -50,20 +51,18 @@ if ! diff "$expected_output" "$actual_output"; then
     exit 1
 fi
 
+# WITH COMMITS
 cat > "$expected_output" <<EOF
-Committed as commit 0
 EOF
 
-pigs-commit -m 'test' > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
+pigs-add a > /dev/null 2>&1
+pigs-commit -m 'test'> /dev/null 2>&1
 
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
+pigs-add b > /dev/null 2>&1
+pigs-commit -m 'second com' > /dev/null 2>&1
 
-# CHECK COMMIT FOR CORRECTNESS
 cat > "$expected_output" <<EOF
+1 second com
 0 test
 EOF
 
@@ -75,28 +74,4 @@ if ! diff "$expected_output" "$actual_output"; then
     exit 1
 fi
 
-cat > "$expected_output" <<EOF
-a
-EOF
-
-ls .pig/commits/commit0 > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-cat > "$expected_output" <<EOF
-line 1
-EOF
-
-pigs-show 0:a > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-echo "$0: pigs-commit test passed!"
+echo "$0: pigs-log test passed!"

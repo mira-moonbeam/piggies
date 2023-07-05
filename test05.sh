@@ -1,8 +1,8 @@
 #! /usr/bin/env dash
 
 # ==============================================================================
-# test02.sh
-# Test the pigs-commit command with various arguments.
+# test05.sh
+# Test the pigs-commit command with -a option.
 # ==============================================================================
 
 # add the current directory to the PATH so scripts

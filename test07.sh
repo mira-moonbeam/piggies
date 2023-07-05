@@ -1,8 +1,8 @@
 #! /usr/bin/env dash
 
 # ==============================================================================
-# test03.sh
-# Test the pigs-commit command for correctness.
+# test07.sh
+# Test the pigs-rm command errors.
 # ==============================================================================
 
 # add the current directory to the PATH so scripts
@@ -25,78 +25,67 @@ trap 'rm "$expected_output" "$actual_output" -rf "$test_dir"' INT HUP QUIT TERM 
 
 # Make some files and directories
 echo line 1 > a
-echo hello world > b
+
+pigs-init> /dev/null 2>&1
+
+pigs-add a > /dev/null 2>&1
+pigs-commit -m 'test'> /dev/null 2>&1
+
+pigs-add b > /dev/null 2>&1
+pigs-commit -m 'second com' > /dev/null 2>&1
+
+# ERROR: Change in WORKING vs REPO AND INDEX
+echo line2 >> a
 
 cat > "$expected_output" <<EOF
-Initialized empty pigs repository in .pig
+pigs-rm: error: 'a' in the repository is different to the working file
 EOF
 
-pigs-init > "$actual_output" 2>&1
+pigs-rm a> "$actual_output" 2>&1
 sed -i 's|^.*/||' "$actual_output"
-
 if ! diff "$expected_output" "$actual_output"; then
     echo "Failed test"
     exit 1
 fi
 
+# ERROR: Change in WORKING and INDEX vs REPO
+pigs-add a > /dev/null 2>&1
+
 cat > "$expected_output" <<EOF
+pigs-rm: error: 'a' has staged changes in the index
 EOF
 
-pigs-add a > "$actual_output" 2>&1
+pigs-rm a> "$actual_output" 2>&1
 sed -i 's|^.*/||' "$actual_output"
-
 if ! diff "$expected_output" "$actual_output"; then
     echo "Failed test"
     exit 1
 fi
 
+# ERROR: Change in WORKING vs INDEX and INDEX vs REPO
+echo lin3 >> a
+
 cat > "$expected_output" <<EOF
-Committed as commit 0
+pigs-rm: error: 'a' in index is different to both the working file and the repository
 EOF
 
-pigs-commit -m 'test' > "$actual_output" 2>&1
+pigs-rm a> "$actual_output" 2>&1
 sed -i 's|^.*/||' "$actual_output"
-
 if ! diff "$expected_output" "$actual_output"; then
     echo "Failed test"
     exit 1
 fi
 
-# CHECK COMMIT FOR CORRECTNESS
+#  ERROR: Filename doesnt exist
 cat > "$expected_output" <<EOF
-0 test
+pigs-rm: error: 'b' is not in the pigs repository
 EOF
 
-pigs-log > "$actual_output" 2>&1
+pigs-rm b> "$actual_output" 2>&1
 sed -i 's|^.*/||' "$actual_output"
-
 if ! diff "$expected_output" "$actual_output"; then
     echo "Failed test"
     exit 1
 fi
 
-cat > "$expected_output" <<EOF
-a
-EOF
-
-ls .pig/commits/commit0 > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-cat > "$expected_output" <<EOF
-line 1
-EOF
-
-pigs-show 0:a > "$actual_output" 2>&1
-sed -i 's|^.*/||' "$actual_output"
-
-if ! diff "$expected_output" "$actual_output"; then
-    echo "Failed test"
-    exit 1
-fi
-
-echo "$0: pigs-commit test passed!"
+echo "$0: pigs-rm errors test passed!"
